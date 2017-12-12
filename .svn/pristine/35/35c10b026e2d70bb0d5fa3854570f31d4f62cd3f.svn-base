@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.epi.datasource.dao.IDatabaseDao">
+
+	<sql id="dsColumns">
+		a.ID,
+		a.TYPE as "type",
+		a.HOST as "host",
+		a.PORT as "port",
+		a.SOURCE_USER as "sourceUser",
+		a.PASSWORD as "password",
+		a.COMMENT as "comment",
+		a.DATABASENAME as "databaseName",
+		a.PROJECT as "project",
+		a.INITIAL_SIZE as "initialSize",
+		a.MIN_IDLE  as "minIdle",
+		a.MAX_ACTIVE as "maxActive",
+		a.MAX_WAIT as "maxWait",
+		a.ROLE_ID as "roleId"
+	</sql>
+
+<!-- 	<select id="get" resultType="cn.epi.datasource.entity.DataSourceEntity"> -->
+<!-- 		SELECT -->
+<!-- 		<include refid="dsColumns" /> -->
+<!-- 		FROM EPI_DATA_SOURCE a -->
+<!-- 		WHERE a.id = #{id} -->
+<!-- 	</select> -->
+
+	<select id="get" resultType="cn.epi.datasource.entity.DataSourceEntity">
+		SELECT
+		<include refid="dsColumns" />
+		FROM ds_datasource a
+		WHERE 0=0 and a.id = #{id}
+	</select>
+
+	<select id="count" resultType="int">
+		SELECT count(1) FROM ds_datasource a
+	</select>
+
+	<select id="findList" resultType="cn.epi.datasource.entity.DataSourceEntity">
+		SELECT
+		<include refid="dsColumns" />
+		FROM ds_datasource a
+	</select>
+	
+	
+	<select id="findPage" resultType="cn.epi.datasource.entity.DataSourceEntity">
+		SELECT
+		<include refid="dsColumns" />
+		FROM ds_datasource a
+		<if test="page.orderBy!=''">
+			ORDER BY ${page.orderBy} LIMIT
+			${page.pageNo*page.pageSize},${page.pageSize}
+		</if>
+	</select>
+
+	<insert id="insert">
+		insert into ds_datasource(TYPE,HOST,PORT,SOURCE_USER,PASSWORD,COMMENT,DATABASENAME,PROJECT,ROLE_ID,INITIAL_SIZE,MIN_IDLE,MAX_ACTIVE,MAX_WAIT)
+		values(#{type},#{host},#{port},#{sourceUser},#{password},#{comment},#{databaseName},#{project},#{roleId},#{initialSize},#{minIdle},#{maxActive},#{maxWait})
+	</insert>
+
+
+	<update id="update">
+		update  ds_datasource  set  TYPE=#{type} ,HOST = #{host},PORT=#{port} ,SOURCE_USER=#{sourceUser} ,PASSWORD=#{password}
+		,COMMENT=#{comment} ,ROLE_ID =#{roleId},DATABASENAME=#{databaseName},PROJECT=#{project},INITIAL_SIZE=#{initialSize},MIN_IDLE=#{minIdle},
+		 MAX_ACTIVE =#{maxActive},MAX_WAIT=#{maxWait} where id=#{id}
+	</update>
+
+
+
+	<delete id="delete">
+		delete from ds_datasource  where id=#{id}
+	</delete>
+</mapper>

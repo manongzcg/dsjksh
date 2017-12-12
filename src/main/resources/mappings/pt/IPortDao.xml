@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.epi.port.dao.IPortDao">
+
+	<sql id="ptColumns">
+		a.ID,
+		a.PORT_NAME as "portName",
+		a.USER_NAME as "userName",
+		a.COMMIT_SQL as "commitSql",
+		a.SOURCE_ID as "sourceId",
+		a.PORT_COMMENT as "portComment",
+		a.CREATE_DATA as "createDate",
+		a.UPDATE_DATA as "updateDate",
+		a.PARAMS as "params",
+		a.STATE as "state",
+		a.FIRSTJAVANAME as "firstjavaname",
+		a.FIRSTJAVA as "firstjava",
+		a.LASTJAVANAME as "lastjavaname",
+		a.LASTJAVA as "lastjava"
+	</sql>
+
+
+	<select id="get" resultType="cn.epi.port.entity.PortEntity">
+		SELECT
+		<include refid="ptColumns" />
+		FROM pt_port a
+		WHERE 0=0 and a.id = #{id}
+	</select>
+
+	<select id="count" resultType="int">
+		SELECT count(1) FROM pt_port a
+		where 1=1
+		 <if test="page.entity.userName!='super'">
+			and USER_NAME =#{page.entity.userName}
+		</if>
+	</select>
+
+	<select id="findList" resultType="cn.epi.port.entity.PortEntity">
+		SELECT
+		<include refid="ptColumns" />
+		FROM pt_port a
+	</select>
+	
+	
+	<select id="findPage" resultType="cn.epi.port.entity.PortEntity">
+		SELECT
+		<include refid="ptColumns" />
+		FROM pt_port a
+		<where>
+		1=1
+		<if test="page.entity.userName!='super'">
+			and USER_NAME =#{page.entity.userName}
+		</if>
+		</where>
+		<if test="page.orderBy!=''">
+			ORDER BY ${page.orderBy} LIMIT
+			${page.pageNo*page.pageSize},${page.pageSize}
+		</if>
+	</select>
+
+	<insert id="insert">
+		insert into pt_port(PORT_NAME,USER_NAME,COMMIT_SQL,SOURCE_ID,PORT_COMMENT,
+		CREATE_DATA,PARAMS,STATE,FIRSTJAVANAME,FIRSTJAVA,LASTJAVANAME,LASTJAVA)
+		values(#{portName},#{userName},#{commitSql},#{sourceId},#{portComment},
+		#{createDate},#{params},#{state},#{firstjavaname},#{firstjava},#{lastjavaname},#{lastjava})
+	</insert>
+
+
+	<update id="update">
+		update  pt_port  set  PORT_NAME=#{portName} ,USER_NAME = #{userName},COMMIT_SQL=#{commitSql} ,
+		SOURCE_ID=#{sourceId} ,PORT_COMMENT=#{portComment}
+		,UPDATE_DATA=#{updateDate},PARAMS=#{params},STATE=#{state},FIRSTJAVANAME= #{firstjavaname},
+		FIRSTJAVA =#{firstjava},LASTJAVANAME=#{lastjavaname}, LASTJAVA =#{lastjava} where id=#{id}
+	</update>
+
+
+
+	<delete id="delete">
+		delete from pt_port  where id=#{id}
+	</delete>
+</mapper>
