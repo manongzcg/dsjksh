@@ -1,6 +1,8 @@
 package cn.epi.util.datasource;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,6 +18,8 @@ import cn.epi.util.excel.ShowCSVUtil;
 import cn.epi.util.excel.ShowExcelUtil;
 
 public class CreateTable {
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSS");
+	String res = sdf.format(new Date());
 	public void ExcleTable(FileSource fs) {
       ShowExcelUtil excleU = new ShowExcelUtil();
       LinkedHashMap lhm = null ;
@@ -37,14 +41,24 @@ public class CreateTable {
 		String filePath = fs.getIP();
 		JSONArray ja = csvU.readcsv(filePath);
 		JSONObject jo = ja.getJSONObject(ja.size()-1);
+		String tableName = "csv_"+res;
+		String sql = "create table "+tableName +"("+CreateSql(jo)+")";
+		
 	}
-	public void CreateSql(JSONObject jo){
+	public static String CreateSql(JSONObject jo){
 		String str = jo.toString();
 		 Map mapType = JSON.parseObject(str,Map.class);  
 	        String field =null;
 	        for (Object obj : mapType.keySet()){  
-	             field = (String) obj; 
+	             field = field+(String) obj; 
+	             if("num".equals(mapType.get(obj))){
+	            	 field = field +" numeric";
+	             }else{
+	            	 field = field + " text";
+	             }
 	             field = field + ", \r\n";
 	        }  
+	      field = field.substring(0,field.length()-6);
+	      return field;
 	}
 }
