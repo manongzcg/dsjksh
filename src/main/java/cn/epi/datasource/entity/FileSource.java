@@ -17,6 +17,8 @@ public class FileSource extends DataEntity<FileSource>{
     private String password   ;          
     private String SID     ;            
     private String data_name  ;
+    private String cache_time  ;
+    private String cache_date  ;
     
 	public int getData_resource_id() {
 		return data_resource_id;
@@ -89,6 +91,18 @@ public class FileSource extends DataEntity<FileSource>{
 	}
 	public void setData_name(String data_name) {
 		this.data_name = data_name;
+	}
+	public String getCache_time() {
+		return cache_time;
+	}
+	public void setCache_time(String cache_time) {
+		this.cache_time = cache_time;
+	}
+	public String getCache_date() {
+		return cache_date;
+	}
+	public void setCache_date(String cache_date) {
+		this.cache_date = cache_date;
 	}
 	    
 }

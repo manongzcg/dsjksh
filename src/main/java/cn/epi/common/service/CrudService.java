@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.epi.common.BaseEntity;
 import cn.epi.common.ICrudDao;
 import cn.epi.common.Page;
+import cn.epi.datasource.entity.FileSource;
+import cn.epi.datasource.entity.Files;
 
 /**
  * Service基类
@@ -59,8 +61,17 @@ public abstract class CrudService<D extends ICrudDao<T>, T extends BaseEntity<T>
      * @param entity
      * @return
      */
-    public List<T> findDesc(String name) {
-        return dao.findDesc(name);
+    public FileSource findDesc(Object id) {
+        return dao.findDesc(id);
+    }
+    /**
+     * 查询所有数据
+     *
+     * @param entity
+     * @return
+     */
+    public FileSource findAll(Object id) {
+        return dao.findAll(id);
     }
     /**
      * 查询列表数据
@@ -70,6 +81,15 @@ public abstract class CrudService<D extends ICrudDao<T>, T extends BaseEntity<T>
      */
     public List<T> findList(T entity) {
         return dao.findList(entity);
+    }
+    /**
+     * 查询数据源id
+     *
+     * @param entity
+     * @return
+     */
+    public int findID(String name) {
+        return dao.findID(name);
     }
 
     /**
@@ -91,7 +111,7 @@ public abstract class CrudService<D extends ICrudDao<T>, T extends BaseEntity<T>
         page.setTotal(dao.count(page));
         return dao.findPage(page);
     }
-
+    
     /**
      * 保存数据（插入或更新）
      *

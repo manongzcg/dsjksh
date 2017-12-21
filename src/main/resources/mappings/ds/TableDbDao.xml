@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.epi.datasource.dao.TableDBDao">
+
+	
+
+
+	
+	<insert id="insert">
+		insert into sjlj_table_datasource(data_resource_id,table_name,state,old_table_name,old_data_name,type,is_Timing_execution)
+		values(#{data_resource_id},#{table_name},#{state},#{old_table_name},#{old_data_name},#{type},#{is_Timing_execution} )
+	</insert>
+
+
+</mapper>

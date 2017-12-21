@@ -24,6 +24,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import cn.epi.datasource.entity.FileSource;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 public class ShowExcelUtil {
 	/**
@@ -47,13 +49,11 @@ public class ShowExcelUtil {
 	 * public LinkedHashMap<String,String> excel2json(File file) throws
 	 * IOException {
 	 */
-	public LinkedHashMap excel2json (FileSource datasource) throws IOException{
+	public JSONObject excel2json (File file) throws IOException{
 		System.out.println("excel2json方法执行....");
-		String filepath = datasource.getIP();
-		File file = new File(filepath.trim());
 		// 返回的map
-		LinkedHashMap<String, String> excelMap = new LinkedHashMap<>();
-
+//		LinkedHashMap<String, String> excelMap = new LinkedHashMap<>();
+         JSONObject jo = new JSONObject();
 		// Excel列的样式，主要是为了解决Excel数字科学计数的问题
 		CellStyle cellStyle;
 		// 根据Excel构成的对象
@@ -62,7 +62,7 @@ public class ShowExcelUtil {
 		if (file.getName().endsWith("xlsx")) {
 			System.out.println("是2007及以上版本  xlsx");
 			wb = new XSSFWorkbook(
-					filepath);
+					file.getAbsolutePath());
 			XSSFDataFormat dataFormat = (XSSFDataFormat) wb.createDataFormat();
 			cellStyle = wb.createCellStyle();
 			// 设置Excel列的样式为文本
@@ -87,7 +87,7 @@ public class ShowExcelUtil {
 
 			// 一个sheet表对于一个List
 			List list = new LinkedList();
-
+			LinkedHashMap Map = new LinkedHashMap();
 			// 将第一行的列值作为正个json的key
 			String[] cellNames;
 			// 取第一行列的值作为key
@@ -162,14 +162,16 @@ public class ShowExcelUtil {
 				list.add(rowMap);
 
 			}
-			list.add(rowMap1);
+			Map.put("meta", rowMap1);
+			Map.put("data", list);
 			// 将该sheet表的表名为key，List转为json后的字符串为Value进行存储
-			excelMap.put(sheet.getSheetName(), JSON.toJSONString(list, false));
+			jo.put(sheet.getSheetName(), JSON.toJSONString(list, false));
+			
 		}
-		System.out.println(excelMap);
+		System.out.println(jo);
 		System.out.println("excel2json方法结束....");
 
-		 return excelMap; 
+		 return jo; 
 	}
 
 	private static String getCellTypev(Cell cell/* , boolean treatAsStr */) {

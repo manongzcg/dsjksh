@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.epi.datasource.dao.FilesDao">
+
+
+
+<insert id="insert">
+		insert into sjlj_files
+		old_name,new_name,url,data_resource_id,csv_separator,withheader
+		values(#{old_name},#{new_name},#{url},#{data_resource_id},#{csv_separator},#{withheader})
+	</insert>
+
+
+	<update id="update">
+		update sjlj_dataresource set
+		old_name=#{old_name},new_name=#{new_name},url=#{url},data_resource_id=#{data_resource_id},csv_separator=#{csv_separator},withheader=#{withheader}
+		where data_resource_id=#{data_resource_id}
+	</update>
+
+	<delete id="delete">
+		delete from sjlj_dataresource where
+		data_resource_id=#{data_resource_id}
+	</delete>
+
+</mapper>

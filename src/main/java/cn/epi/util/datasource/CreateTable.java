@@ -20,45 +20,51 @@ import cn.epi.util.excel.ShowExcelUtil;
 public class CreateTable {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSS");
 	String res = sdf.format(new Date());
-	public void ExcleTable(FileSource fs) {
-      ShowExcelUtil excleU = new ShowExcelUtil();
-      LinkedHashMap lhm = null ;
-      try {
-		lhm = excleU.excel2json(fs);
-		  for (Iterator it =  lhm.keySet().iterator();it.hasNext();)
-		   {
-		    Object key = it.next();
-		    JSONArray ja = (JSONArray) lhm.get(key);
-		    JSONObject jo = ja.getJSONObject(ja.size()-1);
-		   }
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	}
-	public void CSVTable(FileSource fs){
-		ShowCSVUtil csvU = new ShowCSVUtil();
-		String filePath = fs.getIP();
-		JSONArray ja = csvU.readcsv(filePath);
-		JSONObject jo = ja.getJSONObject(ja.size()-1);
-		String tableName = "csv_"+res;
-		String sql = "create table "+tableName +"("+CreateSql(jo)+")";
-		
-	}
-	public static String CreateSql(JSONObject jo){
-		String str = jo.toString();
-		 Map mapType = JSON.parseObject(str,Map.class);  
-	        String field =null;
-	        for (Object obj : mapType.keySet()){  
-	             field = field+(String) obj; 
-	             if("num".equals(mapType.get(obj))){
+	public boolean createETable(JSONObject jsonArr_sheet, String tableName) {
+		String field = null;
+		DBUtil dbutil = new DBUtil();
+		     for (Iterator it1 =  jsonArr_sheet.keySet().iterator();it1.hasNext();)
+			   {
+			    Object key1 = it1.next();
+			  String value = (String) jsonArr_sheet.get(key1);
+			   field = field+(String) key1; 
+	             if("num".equals(value)){
 	            	 field = field +" numeric";
 	             }else{
 	            	 field = field + " text";
 	             }
 	             field = field + ", \r\n";
-	        }  
-	      field = field.substring(0,field.length()-6);
-	      return field;
+			   }
+		     field = field.substring(0,field.length()-6);
+		    
+			String sql = "create table "+tableName +"("+field+")";
+		   boolean re = dbutil.connGP(sql);
+		return re;
+	
 	}
+//	public void CSVTable(FileSource fs){
+//		ShowCSVUtil csvU = new ShowCSVUtil();
+//		String filePath = fs.getIP();
+//		JSONArray ja = csvU.readcsv(filePath);
+//		JSONObject jo = ja.getJSONObject(ja.size()-1);
+//		String tableName = "csv_"+res;
+//		String sql = "create table "+tableName +"("+CreateSql(jo)+")";
+//		
+//	}
+//	public static String CreateSql(JSONObject jo){
+//		String str = jo.toString();
+//		 Map mapType = JSON.parseObject(str,Map.class);  
+//	        String field =null;
+//	        for (Object obj : mapType.keySet()){  
+//	             field = field+(String) obj; 
+//	             if("num".equals(mapType.get(obj))){
+//	            	 field = field +" numeric";
+//	             }else{
+//	            	 field = field + " text";
+//	             }
+//	             field = field + ", \r\n";
+//	        }  
+//	      field = field.substring(0,field.length()-6);
+//	      return field;
+//	}
 }

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -142,30 +140,39 @@ public class ShowCSVUtil {
 		return sb;
 	}
 
-	public JSONArray readcsv(String path) {
+	public JSONObject readcsv(String path) {
 		JSONArray array = new JSONArray();
-
+		JSONObject json_all= new JSONObject();
 		ShowCSVUtil util;
-
+		JSONObject jsonobject1 = new JSONObject();
+		
 		try {
 			util = new ShowCSVUtil(path);
 			int row = util.getRowNum();
-			int col = util.getColNum();
-			for (int i = 0; i < col; i++) {
+			for (int i = 1; i < row; i++) {
+				
+				String value = util.getRow(i);
+				String[] str_1 = value.split(",");
+				String sb = new String();
 				JSONObject jsonobject = new JSONObject();
-				JSONObject jsonobject1 = new JSONObject();
-				String value = util.getCol(i);
-				jsonobject.put(util.getString(0, i), util.removehead(value));
-				jsonobject1.put(util.getString(0, i), util.isNum(value));
-				array.add(jsonobject);
-				array.add(jsonobject1);
-				System.out.println(array);
+				for (int j = 0; j < str_1.length; j++) {
+					sb = str_1[j] ;
+					jsonobject.put(util.getString(0, j), sb);
+						
+						
+						jsonobject1.put(util.getString(0,j ), util.isNum(value));
+					
+				}
+				
+				array.add(i-1, jsonobject);
 			}
+			json_all.put("mate", jsonobject1);
+			json_all.put("data", array);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return array;
+		return json_all;
 	}
 
 	public String isNum(String str) {
@@ -185,7 +192,7 @@ public class ShowCSVUtil {
 
 	public static void main(String[] args) {
 		ShowCSVUtil util = new ShowCSVUtil();
-		JSONArray array = util
+		JSONObject array = util
 				.readcsv("C:/Users/Administrator/Desktop/test.csv");
 		System.out.println(array);
 	}
