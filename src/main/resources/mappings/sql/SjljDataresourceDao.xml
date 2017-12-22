@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.epi.sqlComponent.dao.SjljDataresourceDao">
+   
+    <sql id="dsColumns">
+		a.relationID,
+		a.data_resource_id,
+		a.table_name,
+		a.state,
+		a.old_table_name,
+		a.old_data_name,
+		a.type,
+		a.is_Timing_execution
+	</sql>
+    <resultMap type="SjljDataresource" id="sjljDataresourceResultMap">
+		<id column="relationID" property="relationID"/>
+		<result column="data_resource_id" property="data_resource_id"/>
+		<result column="table_name" property="table_name"/>
+		<result column="state" property="state"/>
+		<result column="old_table_name" property="old_table_name"/>
+		<result column="old_data_name" property="old_data_name"/>
+		<result column="type" property="type"/>
+		<result column="is_Timing_execution" property="is_Timing_execution"/>
+	</resultMap>
+	
+	<select id="get"   resultMap="sjljDataresourceResultMap">
+		SELECT
+		<include refid="dsColumns" />
+		FROM sjlj_table_datasource a
+		WHERE 0=0 and a.data_resource_id = ${data_resource_id}  AND  a.old_table_name=#{old_table_name}  AND  a.old_data_name=#{old_data_name}
+	</select>
+
+	<select id="findListName" resultType="String">
+		SELECT
+		a.table_name
+		FROM sjlj_table_datasource a
+	</select>
+	<select id="findDesc" resultType="cn.epi.sqlComponent.entity.SjljDataresource">
+		SELECT 
+		<include refid="dsColumns" /> 
+		FROM sjlj_table_datasource a where old_table_name=#{old_table_name}
+	</select>
+
+
+
+	<insert id="insert">
+		insert into sjlj_table_datasource (relationID,data_resource_id,table_name,state,old_table_name,old_data_name,type,is_Timing_execution)
+		values(#{relationID},#{data_resource_id},#{table_name},#{state},#{old_table_name},#{old_data_name},#{type},#{is_Timing_execution})
+	</insert>
+
+
+	<update id="update">
+		update sjlj_table_datasource set 
+		data_resource_id=#{data_resource_id},table_name=#{table_name},state=#{state},old_table_name=#{old_table_name},old_data_name=#{old_data_name},type=#{type},is_Timing_execution=#{is_Timing_execution} 
+		where relationID=#{relationID}
+	</update>
+
+
+
+	<delete id="delete">
+		delete from sjlj_table_datasource where data_resource_id=#{data_resource_id}
+	</delete>
+
+</mapper>
