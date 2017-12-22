@@ -115,8 +115,12 @@ public class DataSourceController extends BaseController {
 	public JSONObject create(FileSource datasource,
 			RedirectAttributes redirectAttributes, HttpServletResponse response) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		datasourceService.save(datasource);
-
+		FileSource id = datasourceService.findAll(datasource.getData_resource_id());
+		if(id != null){
+			datasourceService.update(datasource);
+		}else{
+			datasourceService.save(datasource);
+		}
 		JSONObject jo = messageReturn.MassageReturn(true);
 		return jo;
 	}

@@ -49,7 +49,7 @@ public class ShowExcelUtil {
 	 * public LinkedHashMap<String,String> excel2json(File file) throws
 	 * IOException {
 	 */
-	public LinkedHashMap excel2json (File file) throws IOException{
+	public JSONObject excel2json (File file) throws IOException{
 		System.out.println("excel2json方法执行....");
 		// 返回的map
 	LinkedHashMap<String, String> excelMap = new LinkedHashMap<>();
@@ -88,6 +88,7 @@ public class ShowExcelUtil {
 			// 一个sheet表对于一个List
 			List list = new LinkedList();
 			LinkedHashMap Map = new LinkedHashMap();
+			JSONObject json_all = new JSONObject();
 			// 将第一行的列值作为正个json的key
 			String[] cellNames;
 			// 取第一行列的值作为key
@@ -116,7 +117,6 @@ public class ShowExcelUtil {
 			for (String s : cellNames) {
 				System.out.print("得到第" + i + " 张sheet表的列头： " + s + ",");
 			}
-			System.out.println();
 
 			// 从第二行起遍历每一行
 			int rowNum = sheet.getLastRowNum();
@@ -152,7 +152,11 @@ public class ShowExcelUtil {
 						cellValues[k] = getCellTypev(cell);
 					}
 					// System.out.println(cellValues[k]);
-					rowMap.put(cellNames[k], getCellValue(cell, true));
+					String key = cellNames[k];
+					if(key == null){
+						key = "f"+k;
+					}
+					rowMap.put(key, getCellValue(cell, true));
 					
 				}
 				for (int l = 0; l < curCellNum; l++) {
@@ -165,13 +169,13 @@ public class ShowExcelUtil {
 			Map.put("meta", rowMap1);
 			Map.put("data", list);
 			// 将该sheet表的表名为key，List转为json后的字符串为Value进行存储
-			excelMap.put(sheet.getSheetName(), JSON.toJSONString(Map, false));
+			jo.put(sheet.getSheetName(), JSON.toJSONString(Map, false));
 			
 		}
-		System.out.println(excelMap);
+		System.out.println(jo);
 		System.out.println("excel2json方法结束....");
 
-		 return excelMap; 
+		 return jo; 
 	}
 
 	private static String getCellTypev(Cell cell/* , boolean treatAsStr */) {

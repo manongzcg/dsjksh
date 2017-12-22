@@ -35,6 +35,7 @@ import com.mysql.fabric.Response;
 
 import cn.epi.common.BaseController;
 import cn.epi.common.Page;
+import cn.epi.common.config.JConfig;
 import cn.epi.common.utils.JUploadUtils;
 import cn.epi.datasource.entity.DataSourceEntity;
 import cn.epi.datasource.entity.FileSource;
@@ -46,6 +47,7 @@ import cn.epi.datasource.service.FilesService;
 import cn.epi.datasource.service.TableDBService;
 import cn.epi.util.datasource.CreateTable;
 import cn.epi.util.datasource.DBUtil;
+import cn.epi.util.datasource.MasgReturn;
 import cn.epi.util.excel.FileUtil;
 import cn.epi.util.excel.ShowCSVUtil;
 import cn.epi.util.excel.ShowExcelUtil;
@@ -57,7 +59,7 @@ public class FileSourceController extends BaseController {
 	private FDatasourceService datasourceService;
 	private FilesService fileservice;
 	private TableDBService tableDBs;
-
+	private MasgReturn messageReturn = new MasgReturn();
 	/**
 	 * 文件上传
 	 * 
@@ -79,7 +81,8 @@ public class FileSourceController extends BaseController {
 		JSONObject joA = new JSONObject();
 		// uploads文件夹位置
 		String rootPath = request.getSession().getServletContext()
-				.getRealPath("resource/uploads/");
+				.getRealPath(JConfig.getConfig(JConfig.FILEUPLOAD));//static/upload
+		System.out.println(rootPath);
 		// 原始名称
 		String originalFileName = file.getOriginalFilename();
 		FileUtil fileutil = new FileUtil();
@@ -113,8 +116,7 @@ public class FileSourceController extends BaseController {
 		}
 		joA.put("files", ja);
 		joA.put("options", show);
-		HttpSession session = request.getSession();
-		session.setAttribute("result", joA);
+		
 		// System.out.println(newFile);
 		// // 将内存中的数据写入磁盘
 		//file.transferTo(newFile);
@@ -125,9 +127,10 @@ public class FileSourceController extends BaseController {
 		 * filesource.setUrl(fileUrl); filesource.setFilename(newFileName);
 		 * model.addAttribute("filesource", filesource);
 		 */
-		return joA;
+		JSONObject json_res = messageReturn.MassageReturn(joA);
+		return json_res;
 	}
-
+	@ResponseBody
 	@RequestMapping(value = "/fileremove")
 	public String move(Model model, HttpServletRequest request,
 			FileSource datasource) throws IllegalStateException, IOException {
@@ -149,25 +152,25 @@ public class FileSourceController extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
-
+	@ResponseBody
 	@RequestMapping(value = "/saveFile", method = RequestMethod.GET)
 	public boolean saveFile(HttpServletResponse response,FileSource datasource,
 			RedirectAttributes redirectAttributes, Files files,
-			HttpServletRequest request) {
+			HttpServletRequest request,JSONArray jsonArr_file,JSONObject json_mate) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		TableDBEntity tableDBe = new TableDBEntity();
 		CreateTable createtable = new CreateTable();
 		datasourceService.save(datasource);
-		int id = datasourceService.findID(datasource.getData_resource_name());
-		HttpSession session = request.getSession();
-		JSONObject jo = (JSONObject) session.getAttribute("result");
-		JSONObject jsonArr_sheet;// 接受json数组
-		JSONArray jsonArr_file;// 接受json数组files
-		JSONObject json_mate;// 接收json
-		jsonArr_file = jo.getJSONArray("files");
+		int id = datasource.getData_resource_id();
+//		String ds = request.getParameter("ds");
+//		JSONArray json=JSONArray.fromObject(ds);
+		//JSONObject jsonArr_sheet;// 接受json数组
+		//JSONArray jsonArr_file;// 接受json数组files
+		//JSONObject json_mate;// 接收json
+		//jsonArr_file = jo.getJSONArray("files");
 		// 获取根路径
 		String rootPath = request.getSession().getServletContext()
-				.getRealPath("resource/uploads/");
+				.getRealPath(JConfig.getConfig(JConfig.FILEUPLOAD));
 		// 获取时间
 		Calendar date = Calendar.getInstance();
 		for (int i = 0; i < jsonArr_file.size(); i++)// 通过循环取出数组里的值
@@ -176,29 +179,29 @@ public class FileSourceController extends BaseController {
 			String key = jsonTemp.getString("key");
 			String name = jsonTemp.getString("name");
 			// 创建年月文件夹
-			File dateDirs = new File(date.get(Calendar.YEAR) + File.separator
-					+ (date.get(Calendar.MONTH) + 1));
-			File newFile = new File(rootPath + key);
-			// 转移到指定路径
-			String path = " D:/data/" + dateDirs + newFile.getName();
-			newFile.renameTo(new File(path));
-			// 判断目标文件所在目录是否存在
-			if (!newFile.getParentFile().exists()) {
-				// 如果目标文件所在的目录不存在，则创建父目录
-				newFile.getParentFile().mkdirs();
-			}
-			files.setUrl(path);
+//			File dateDirs = new File(date.get(Calendar.YEAR) + File.separator
+//					+ (date.get(Calendar.MONTH) + 1));
+//			File newFile = new File(rootPath + key);
+//			// 转移到指定路径
+//			String path = " D:/data/" + dateDirs + newFile.getName();
+//			newFile.renameTo(new File(path));
+//			// 判断目标文件所在目录是否存在
+//			if (!newFile.getParentFile().exists()) {
+//				// 如果目标文件所在的目录不存在，则创建父目录
+//				newFile.getParentFile().mkdirs();
+//			}
+			files.setUrl(rootPath+"/"+key);
 			files.setNew_name(key);
 			files.setOld_name(name);
 			files.setData_resource_id(id);
 			fileservice.save(files);
 		}
-		jsonArr_sheet = jo.getJSONObject("options");
+		//jsonArr_sheet = jo.getJSONObject("options");
 		 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSS");
 	     String res = sdf.format(new Date());
 	     boolean result = false ;
 		if ("CSV".equals(datasource.getData_type())) {
-			 json_mate = jsonArr_sheet.getJSONObject("mate");
+			 //json_mate = jsonArr_sheet.getJSONObject("mate");
 			 String  table_name ="C_"+res; 
 			 result = createtable.createETable(json_mate,table_name);
 		     tableDBe.setTable_name(table_name);
@@ -207,17 +210,17 @@ public class FileSourceController extends BaseController {
 		     
 		} else {
 			 
-			for (Iterator it =  jsonArr_sheet.keySet().iterator();it.hasNext();)
-			   {
-			    Object key = it.next();
-			    JSONObject json_table = (JSONObject) jsonArr_sheet.get(key);
-			     json_mate = json_table.getJSONObject("mate");
+//			for (Iterator it =  jsonArr_sheet.keySet().iterator();it.hasNext();)
+//			   {
+//			    Object key = it.next();
+//			    JSONObject json_table = (JSONObject) jsonArr_sheet.get(key);
+//			     json_mate = json_table.getJSONObject("mate");
 			     String  table_name = "E_"+res;
 			     result =  createtable.createETable(json_mate,table_name);
 			     tableDBe.setTable_name(table_name);
 			     tableDBe.setData_resource_id(id);
 			     tableDBs.save(tableDBe);
-			     }
+//			     }
 			
 		}
 		return result;

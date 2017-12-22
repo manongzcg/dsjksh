@@ -144,9 +144,10 @@ public class ShowCSVUtil {
 	public JSONObject readcsv(File file) {
 		JSONArray array = new JSONArray();
 		JSONObject json_all= new JSONObject();
+		JSONObject json_res= new JSONObject();
 		ShowCSVUtil util;
 		JSONObject jsonobject1 = new JSONObject();
-		
+		String fileName = file.getName();
 		try {
 			util = new ShowCSVUtil(file.getAbsolutePath());
 			int row = util.getRowNum();
@@ -159,21 +160,29 @@ public class ShowCSVUtil {
 				for (int j = 0; j < str_1.length; j++) {
 					sb = str_1[j] ;
 					jsonobject.put(util.getString(0, j), sb);
-						
-						
-						jsonobject1.put(util.getString(0,j ), util.isNum(value));
 					
 				}
 				
 				array.add(i-1, jsonobject);
 			}
-			json_all.put("mate", jsonobject1);
+			int col = util.getColNum();
+			for (int i = 0; i < col; i++) {
+				String value = util.getCol(i);
+				String[] str_1 = value.split(",");
+				for (int j = 0; j < str_1.length; j++) {
+					jsonobject1.put(util.getString(0,i), util.isNum(value));
+					
+				}
+				
+			}
 			json_all.put("data", array);
+			json_all.put("mate", jsonobject1);
+			json_res.put("table", json_all);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return json_all;
+		return json_res;
 	}
 
 	public String isNum(String str) {
@@ -191,10 +200,11 @@ public class ShowCSVUtil {
 		return sb;
 	}
 
-//	public static void main(String[] args) {
-//		ShowCSVUtil util = new ShowCSVUtil();
-//		JSONObject array = util
-//				.readcsv("C:/Users/Administrator/Desktop/test.csv");
-//		System.out.println(array);
-//	}
+	public static void main(String[] args) {
+		ShowCSVUtil util = new ShowCSVUtil();
+		File file = new File("C:/Users/Administrator/Desktop/test.csv");
+		JSONObject array = util
+				.readcsv(file);
+		System.out.println(array);
+	}
 }
