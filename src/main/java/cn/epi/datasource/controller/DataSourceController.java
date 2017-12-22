@@ -61,7 +61,7 @@ public class DataSourceController extends BaseController {
 
 	@RequestMapping(value = "/showTable")
 	public @ResponseBody
-	JSONArray showTable(HttpServletResponse response,Model model, HttpServletRequest request, FileSource filesource)
+	JSONObject showTable(HttpServletResponse response,Model model, HttpServletRequest request, FileSource filesource)
 			throws IllegalStateException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		HttpSession session = request.getSession();
@@ -70,7 +70,8 @@ public class DataSourceController extends BaseController {
 		// System.out.println(filesource.getPassword());
 		ShowDB db = new ShowDB();
 		JSONArray result = db.showTable(filesource1);
-		return result;
+		JSONObject jo = messageReturn.MassageReturn(result);
+		return jo;
 	}
 
 	/**
@@ -82,14 +83,15 @@ public class DataSourceController extends BaseController {
 	 */
 	@RequestMapping(value = "/showDesc")
 	public @ResponseBody
-	JSONArray showDesc(HttpServletResponse response,Model model, HttpServletRequest request, String tableName,FileSource filesource)
+	JSONObject showDesc(HttpServletResponse response,Model model, HttpServletRequest request, String tableName,FileSource filesource)
 			throws IllegalStateException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		FileSource filesource1 = datasourceService.findAll(filesource.getData_resource_id());
 		filesource1.setData_name(filesource.getData_name());
 		ShowDB db = new ShowDB();
 		JSONArray result = db.showDesc(filesource1, tableName);
-		return result;
+		JSONObject jo = messageReturn.MassageReturn(result);
+		return jo;
 	}
 
 	@RequestMapping(value = "/testConn")
@@ -126,12 +128,12 @@ public class DataSourceController extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
-
-	@RequestMapping(value = "/updata", method = RequestMethod.POST)
+	@ResponseBody
+	@RequestMapping(value = "/changeName", method = RequestMethod.POST)
 	public String updata(FileSource datasource,
 			RedirectAttributes redirectAttributes, HttpServletResponse response) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		datasourceService.save(datasource);
+		datasourceService.changeName(datasource);
 
 		return "保存成功";
 	}
@@ -143,15 +145,14 @@ public class DataSourceController extends BaseController {
 	 * @param redirectAttributes
 	 * @return
 	 */
-
+	@ResponseBody
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	public String delete(FileSource datasource,
-			RedirectAttributes redirectAttributes) {
+	public JSONObject delete(FileSource datasource,
+			RedirectAttributes redirectAttributes, HttpServletResponse response) {
+		response.setHeader("Access-Control-Allow-Origin", "*");
 		datasourceService.delete(datasource);
-		// addMessage(redirectAttributes, "删除成功");
-		// return "redirect:" + adminPath +
-		// "/source/update?id="+datasource.getId();
-		return "删除成功";
+		JSONObject jo = messageReturn.MassageReturn(true);
+		return jo;
 	}
 
 	/**

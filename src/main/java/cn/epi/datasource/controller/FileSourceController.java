@@ -35,6 +35,7 @@ import com.mysql.fabric.Response;
 
 import cn.epi.common.BaseController;
 import cn.epi.common.Page;
+import cn.epi.common.utils.JUploadUtils;
 import cn.epi.datasource.entity.DataSourceEntity;
 import cn.epi.datasource.entity.FileSource;
 import cn.epi.datasource.entity.Files;
@@ -45,6 +46,7 @@ import cn.epi.datasource.service.FilesService;
 import cn.epi.datasource.service.TableDBService;
 import cn.epi.util.datasource.CreateTable;
 import cn.epi.util.datasource.DBUtil;
+import cn.epi.util.excel.FileUtil;
 import cn.epi.util.excel.ShowCSVUtil;
 import cn.epi.util.excel.ShowExcelUtil;
 
@@ -71,8 +73,7 @@ public class FileSourceController extends BaseController {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSS");
-		String res = sdf.format(new Date());
+		
 		JSONObject jo = new JSONObject();
 		JSONArray ja = new JSONArray();
 		JSONObject joA = new JSONObject();
@@ -81,9 +82,16 @@ public class FileSourceController extends BaseController {
 				.getRealPath("resource/uploads/");
 		// 原始名称
 		String originalFileName = file.getOriginalFilename();
+		FileUtil fileutil = new FileUtil();
 		// 新文件名
-		String newFileName = res
-				+ originalFileName.substring(originalFileName.lastIndexOf("."));
+		File newFile = null;
+		try {
+			newFile = fileutil.save(file, request);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String newFileName = newFile.getName();
 		jo.put("name", originalFileName);
 		jo.put("key", newFileName);
 		ja.add(jo);
@@ -91,12 +99,14 @@ public class FileSourceController extends BaseController {
 		String fileType = originalFileName.substring(
 				originalFileName.lastIndexOf(".") + 1,
 				originalFileName.length()).toLowerCase();
-		JSONObject show = new JSONObject();
+		Object show = new Object();
 		// 新文件
-		File newFile = new File(rootPath + newFileName);
+		//File newFile = new File(rootPath +"/"+ newFileName);
+		// // 将内存中的数据写入磁盘
+			//	file.transferTo(newFile);
 		if ("csv".equals(fileType)) {
 		ShowCSVUtil showCSV = new ShowCSVUtil();
-		showCSV.readcsv(rootPath + newFileName);
+		show = showCSV.readcsv(newFile);
 		} else {
 			ShowExcelUtil showExcel = new ShowExcelUtil();
 			show = showExcel.excel2json(newFile);
@@ -107,7 +117,7 @@ public class FileSourceController extends BaseController {
 		session.setAttribute("result", joA);
 		// System.out.println(newFile);
 		// // 将内存中的数据写入磁盘
-		file.transferTo(newFile);
+		//file.transferTo(newFile);
 		// 完整的url
 		// String fileUrl = date.get(Calendar.YEAR) + "/"
 		// + (date.get(Calendar.MONTH) + 1) + "/" + newFileName;

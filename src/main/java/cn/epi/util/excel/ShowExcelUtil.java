@@ -49,10 +49,10 @@ public class ShowExcelUtil {
 	 * public LinkedHashMap<String,String> excel2json(File file) throws
 	 * IOException {
 	 */
-	public JSONObject excel2json (File file) throws IOException{
+	public LinkedHashMap excel2json (File file) throws IOException{
 		System.out.println("excel2json方法执行....");
 		// 返回的map
-//		LinkedHashMap<String, String> excelMap = new LinkedHashMap<>();
+	LinkedHashMap<String, String> excelMap = new LinkedHashMap<>();
          JSONObject jo = new JSONObject();
 		// Excel列的样式，主要是为了解决Excel数字科学计数的问题
 		CellStyle cellStyle;
@@ -131,7 +131,7 @@ public class ShowExcelUtil {
 				// 取得某一行
 				Row row = sheet.getRow(j);
 				int cellNum = row.getLastCellNum();
-				System.out.println("总共有 " + cellNum + "列");
+				//System.out.println("总共有 " + cellNum + "列");
 
 				// 遍历每一列
 
@@ -146,8 +146,8 @@ public class ShowExcelUtil {
 					 */
 					// 保存该单元格的数据到该行中
 
-					if ("abc".equals(cellValues[k])) {
-						cellValues[k] = "abc";
+					if ("string".equals(cellValues[k])) {
+						cellValues[k] = "string";
 					} else {
 						cellValues[k] = getCellTypev(cell);
 					}
@@ -165,13 +165,13 @@ public class ShowExcelUtil {
 			Map.put("meta", rowMap1);
 			Map.put("data", list);
 			// 将该sheet表的表名为key，List转为json后的字符串为Value进行存储
-			jo.put(sheet.getSheetName(), JSON.toJSONString(list, false));
+			excelMap.put(sheet.getSheetName(), JSON.toJSONString(Map, false));
 			
 		}
-		System.out.println(jo);
+		System.out.println(excelMap);
 		System.out.println("excel2json方法结束....");
 
-		 return jo; 
+		 return excelMap; 
 	}
 
 	private static String getCellTypev(Cell cell/* , boolean treatAsStr */) {
@@ -182,9 +182,9 @@ public class ShowExcelUtil {
 		if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
 			return "TF";
 		} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-			return "123";
+			return "num";
 		} else {
-			return "abc";
+			return "string";
 		}
 	}
 

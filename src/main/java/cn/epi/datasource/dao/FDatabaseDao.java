@@ -12,4 +12,11 @@ import cn.epi.datasource.entity.FileSource;
 @MyBatisDao
 public interface FDatabaseDao extends ICrudDao<FileSource> {
 	
+	/**
+	 * 重命名                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public int changeName(FileSource filesource);
 }

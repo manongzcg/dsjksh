@@ -1,6 +1,7 @@
 package cn.epi.util.excel;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -140,14 +141,14 @@ public class ShowCSVUtil {
 		return sb;
 	}
 
-	public JSONObject readcsv(String path) {
+	public JSONObject readcsv(File file) {
 		JSONArray array = new JSONArray();
 		JSONObject json_all= new JSONObject();
 		ShowCSVUtil util;
 		JSONObject jsonobject1 = new JSONObject();
 		
 		try {
-			util = new ShowCSVUtil(path);
+			util = new ShowCSVUtil(file.getAbsolutePath());
 			int row = util.getRowNum();
 			for (int i = 1; i < row; i++) {
 				
@@ -190,10 +191,10 @@ public class ShowCSVUtil {
 		return sb;
 	}
 
-	public static void main(String[] args) {
-		ShowCSVUtil util = new ShowCSVUtil();
-		JSONObject array = util
-				.readcsv("C:/Users/Administrator/Desktop/test.csv");
-		System.out.println(array);
-	}
+//	public static void main(String[] args) {
+//		ShowCSVUtil util = new ShowCSVUtil();
+//		JSONObject array = util
+//				.readcsv("C:/Users/Administrator/Desktop/test.csv");
+//		System.out.println(array);
+//	}
 }
