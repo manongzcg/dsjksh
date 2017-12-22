@@ -159,7 +159,7 @@ public class PortalController {
 		if (port.getState().equals("1")) {
 			result = portalService.queryPortal(port, values);
 		} else {
-			Map map = new HashMap<>();
+			Map map = new HashMap<Object,Object>();
 			for (int i = 0; i < paramsNum; i++) {
 				String params1 = params[i];
 				map.put(params[i], values[i]);

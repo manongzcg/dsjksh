@@ -65,7 +65,10 @@ public class DBUtil {
 					filesource.getPassword());
 			// 3.通过数据库的连接操作数据库，实现增删改查
 
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException  e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -52,7 +52,7 @@ public class ShowExcelUtil {
 		String filepath = datasource.getIP();
 		File file = new File(filepath.trim());
 		// 返回的map
-		LinkedHashMap<String, String> excelMap = new LinkedHashMap<>();
+		LinkedHashMap<String, String> excelMap = new LinkedHashMap<String, String>();
 
 		// Excel列的样式，主要是为了解决Excel数字科学计数的问题
 		CellStyle cellStyle;
