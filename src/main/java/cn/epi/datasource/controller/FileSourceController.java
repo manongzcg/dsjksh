@@ -238,5 +238,60 @@ public class FileSourceController extends BaseController {
 		JSONObject json_res = messageReturn.MassageReturn(result);
 		return json_res;
 	}
+	@ResponseBody
+	@RequestMapping(value = "/uploadShow")
+	public JSONObject uploadshow(HttpServletResponse response, Model model,FileSource filesource,
+			HttpServletRequest request) throws IllegalStateException,
+			IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
+        
+		List<Files> list = fileService.getName(filesource.getData_resource_id());
+		
+		JSONObject json_res = messageReturn.MassageReturn(list);
+		return json_res;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/uploadShow")
+	public JSONObject fileshow(HttpServletResponse response, Model model,String key,
+			HttpServletRequest request) throws IllegalStateException,
+			IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
+        
 
+		JSONObject jo = new JSONObject();
+		JSONArray ja = new JSONArray();
+		JSONObject joA = new JSONObject();
+		// uploads文件夹位置
+		String rootPath = request.getSession().getServletContext()
+				.getRealPath(JConfig.getConfig(JConfig.FILEUPLOAD));//static/upload
+		System.out.println(rootPath);
+		// 原始名称
+		File newFile = new File(rootPath+"/"+key);
+		String newFileName = newFile.getName();
+		
+		jo.put("key", newFileName);
+		ja.add(jo);
+		String fileType = key.substring(
+				key.lastIndexOf(".") + 1,
+				key.length()).toLowerCase();
+		Object show = new Object();
+		// 新文件
+		//File newFile = new File(rootPath +"/"+ newFileName);
+		// // 将内存中的数据写入磁盘
+			//	file.transferTo(newFile);
+		if ("csv".equals(fileType)) {
+		ShowCSVUtil showCSV = new ShowCSVUtil();
+		show = showCSV.readcsv(newFile);
+		} else {
+			ShowExcelUtil showExcel = new ShowExcelUtil();
+			show = showExcel.excel2json(newFile);
+		}
+		joA.put("files", ja);
+		joA.put("options", show);
+		
+		JSONObject json_res = messageReturn.MassageReturn(joA);
+		return json_res;
+	}
 }

@@ -3,7 +3,17 @@
 <mapper namespace="cn.epi.datasource.dao.FilesDao">
 
 
-
+<resultMap type="cn.epi.datasource.entity.Files" id="getResultMap">
+		<result column="old_name" property="old_name" />
+		<result column="new_name" property="new_name" />
+		
+	</resultMap>
+<select id="get" resultMap="getResultMap">
+		SELECT
+		old_name,new_name
+		FROM sjlj_file a
+		WHERE 0=0 and a.data_resource_id = #{data_resource_id}
+	</select>
 <insert id="insert">
 		insert into sjlj_file
 		(old_name,new_name,url,data_resource_id,csv_separator,withheader)
