@@ -5,6 +5,10 @@ import java.sql.Date;
 import cn.epi.sys.entity.DataEntity;
 
 public class FileSource extends DataEntity<FileSource>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private  int data_resource_id; 
     private String data_resource_name;
     private String data_type ;           

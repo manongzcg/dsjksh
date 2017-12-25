@@ -3,6 +3,10 @@ package cn.epi.datasource.entity;
 import cn.epi.sys.entity.DataEntity;
 
 public class Files extends DataEntity<Files> {
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 private  int file_resource_id ;
 private String old_name;
 private String new_name;

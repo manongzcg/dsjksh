@@ -252,7 +252,7 @@ public class FileSourceController extends BaseController {
 		return json_res;
 	}
 	@ResponseBody
-	@RequestMapping(value = "/uploadShow")
+	@RequestMapping(value = "/fileshow")
 	public JSONObject fileshow(HttpServletResponse response, Model model,String key,
 			HttpServletRequest request) throws IllegalStateException,
 			IOException {

@@ -9,7 +9,11 @@ import cn.epi.sys.entity.DataEntity;
  */
 public class TableDBEntity  extends DataEntity<TableDBEntity>{
 
-	   private  int relationID;
+	   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private  int relationID;
 	   private int data_resource_id ;
 	   private String table_name           ;
 	   private String state               ;

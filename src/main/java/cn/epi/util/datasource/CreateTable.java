@@ -3,9 +3,11 @@ package cn.epi.util.datasource;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
@@ -47,14 +49,18 @@ public class CreateTable {
 		DBUtil dbutil = new DBUtil();
 		String sql = "";
 		boolean re =false;
-		Object show = new Object();
+		List<String> list = new  ArrayList<String> ();
 		if("csv".equals(type)){
 			for (int i = 0; i < jsonArr_file.size(); i++)// 通过循环取出数组里的值
 			{
 				ShowCSVUtil showCSV = new ShowCSVUtil();
-				JSONObject jsonTemp = (JSONObject) jsonArr_file.getJSONObject(i);
+				JSONObject jsonTemp = jsonArr_file.getJSONObject(i);
 				String key = jsonTemp.getString("key");
-				show = (JSONObject)showCSV.csv2json_mate(rootPath+"/"+key);
+				list = showCSV.csv2json_mate(rootPath+"/"+key);
+				for (int j=0; j< list.size(); j++){
+					sql = "insert into "+tableName+" values ("+list.get(j)+")";
+					re = dbutil.connGP(sql);
+				}
 				 re = dbutil.connGP(sql);
 				
 			}
