@@ -57,7 +57,9 @@ public class FileSourceController extends BaseController {
 
 	@Autowired
 	private FDatasourceService datasourceService;
-	private FilesService fileservice;
+	@Autowired
+	private FilesService fileService ;
+	@Autowired
 	private TableDBService tableDBs;
 	private MasgReturn messageReturn = new MasgReturn();
 	/**
@@ -98,7 +100,6 @@ public class FileSourceController extends BaseController {
 		jo.put("name", originalFileName);
 		jo.put("key", newFileName);
 		ja.add(jo);
-
 		String fileType = originalFileName.substring(
 				originalFileName.lastIndexOf(".") + 1,
 				originalFileName.length()).toLowerCase();
@@ -116,7 +117,8 @@ public class FileSourceController extends BaseController {
 		}
 		joA.put("files", ja);
 		joA.put("options", show);
-		
+		HttpSession session = request.getSession();
+		session.setAttribute("files", ja);
 		// System.out.println(newFile);
 		// // 将内存中的数据写入磁盘
 		//file.transferTo(newFile);
@@ -153,17 +155,20 @@ public class FileSourceController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/saveFile", method = RequestMethod.GET)
-	public boolean saveFile(HttpServletResponse response,FileSource datasource,
-			RedirectAttributes redirectAttributes, Files files,
-			HttpServletRequest request,JSONArray jsonArr_file,JSONObject json_mate) {
+	@RequestMapping(value = "/saveFile", method = RequestMethod.POST)
+	public JSONObject saveFile(HttpServletResponse response,FileSource datasource,
+			RedirectAttributes redirectAttributes, Files files,String params,String mate,
+			HttpServletRequest request) {
 		response.setHeader("Access-Control-Allow-Origin", "*");
+		System.out.println(files.getWithheader());
+		JSONArray jsonArr_file = JSONObject.parseArray(params);
+		JSONObject json_mate = JSONObject.parseObject(mate);
 		TableDBEntity tableDBe = new TableDBEntity();
 		CreateTable createtable = new CreateTable();
 		datasourceService.save(datasource);
 		int id = datasource.getData_resource_id();
-//		String ds = request.getParameter("ds");
-//		JSONArray json=JSONArray.fromObject(ds);
+//		 HttpSession session = request.getSession();  
+//        JSONArray jsonArr_file = (JSONArray) session.getAttribute("files"); 
 		//JSONObject jsonArr_sheet;// 接受json数组
 		//JSONArray jsonArr_file;// 接受json数组files
 		//JSONObject json_mate;// 接收json
@@ -172,7 +177,7 @@ public class FileSourceController extends BaseController {
 		String rootPath = request.getSession().getServletContext()
 				.getRealPath(JConfig.getConfig(JConfig.FILEUPLOAD));
 		// 获取时间
-		Calendar date = Calendar.getInstance();
+		String filePath = null;
 		for (int i = 0; i < jsonArr_file.size(); i++)// 通过循环取出数组里的值
 		{
 			JSONObject jsonTemp = (JSONObject) jsonArr_file.getJSONObject(i);
@@ -190,18 +195,20 @@ public class FileSourceController extends BaseController {
 //				// 如果目标文件所在的目录不存在，则创建父目录
 //				newFile.getParentFile().mkdirs();
 //			}
-			files.setUrl(rootPath+"/"+key);
-			files.setNew_name(key);
+			filePath = rootPath+"/"+key;
+			files.setUrl(filePath);
 			files.setOld_name(name);
+			files.setNew_name(key);
 			files.setData_resource_id(id);
-			fileservice.save(files);
+			fileService.save(files);
 		}
 		//jsonArr_sheet = jo.getJSONObject("options");
 		 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSS");
 	     String res = sdf.format(new Date());
 	     boolean result = false ;
 		if ("CSV".equals(datasource.getData_type())) {
-			 //json_mate = jsonArr_sheet.getJSONObject("mate");
+//			ShowCSVUtil showCSV = new ShowCSVUtil();
+//			JSONObject json_mate = showCSV.csv2json_mate(filePath);
 			 String  table_name ="C_"+res; 
 			 result = createtable.createETable(json_mate,table_name);
 		     tableDBe.setTable_name(table_name);
@@ -209,12 +216,19 @@ public class FileSourceController extends BaseController {
 		     tableDBs.save(tableDBe);
 		     
 		} else {
-			 
-//			for (Iterator it =  jsonArr_sheet.keySet().iterator();it.hasNext();)
+			ShowExcelUtil showExcel = new ShowExcelUtil();
+			 JSONObject jsonObj_sheet = null;
+			try {
+				jsonObj_sheet = showExcel.excel2json_sheet(filePath);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			for (Iterator it =  jsonObj_sheet.keySet().iterator();it.hasNext();)
 //			   {
 //			    Object key = it.next();
-//			    JSONObject json_table = (JSONObject) jsonArr_sheet.get(key);
-//			     json_mate = json_table.getJSONObject("mate");
+//			    JSONObject json_table = (JSONObject) jsonObj_sheet.get(key);
+//			     JSONObject json_mate = json_table.getJSONObject("mate");
 			     String  table_name = "E_"+res;
 			     result =  createtable.createETable(json_mate,table_name);
 			     tableDBe.setTable_name(table_name);
@@ -223,7 +237,8 @@ public class FileSourceController extends BaseController {
 //			     }
 			
 		}
-		return result;
+		JSONObject json_res = messageReturn.MassageReturn(result);
+		return json_res;
 	}
 
 }

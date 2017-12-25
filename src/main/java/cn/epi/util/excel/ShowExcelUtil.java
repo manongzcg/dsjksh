@@ -86,8 +86,9 @@ public class ShowExcelUtil {
 			System.out.println("第" + i + "个sheet:" + sheet.toString());
 
 			// 一个sheet表对于一个List
-			List list = new LinkedList();
-			LinkedHashMap Map = new LinkedHashMap();
+			//List list = new LinkedList();
+			JSONArray jarr_data = new JSONArray();
+			//LinkedHashMap Map = new LinkedHashMap();
 			JSONObject json_all = new JSONObject();
 			// 将第一行的列值作为正个json的key
 			String[] cellNames;
@@ -120,17 +121,21 @@ public class ShowExcelUtil {
 
 			// 从第二行起遍历每一行
 			int rowNum = sheet.getLastRowNum();
+			if(rowNum > 1000){
+				rowNum = 1000;
+			}
 			System.out.println("总共有 " + rowNum + " 行");
-			LinkedHashMap rowMap1 = new LinkedHashMap();
+			//LinkedHashMap rowMap1 = new LinkedHashMap();
+			JSONObject json_mate = new JSONObject();
 			String[] cellValues = new String[curCellNum];
 			for (int j = 1; j <= rowNum; j++) {
 
 				// 一行数据对于一个Map
-				LinkedHashMap rowMap = new LinkedHashMap();
-
+				//LinkedHashMap rowMap = new LinkedHashMap();
+				JSONObject json_data = new JSONObject();
 				// 取得某一行
 				Row row = sheet.getRow(j);
-				int cellNum = row.getLastCellNum();
+				//int cellNum = row.getLastCellNum();
 				//System.out.println("总共有 " + cellNum + "列");
 
 				// 遍历每一列
@@ -156,20 +161,24 @@ public class ShowExcelUtil {
 					if(key == null){
 						key = "f"+k;
 					}
-					rowMap.put(key, getCellValue(cell, true));
+					json_data.put(key, getCellValue(cell, true));
 					
 				}
 				for (int l = 0; l < curCellNum; l++) {
-					rowMap1.put(cellNames[l], cellValues[l]);
+					String key = cellNames[l];
+					if(key == null){
+						key = "f"+l;
+					}
+					json_mate.put(key, cellValues[l]);
 					// 保存该行的数据到该表的List中
 				}
-				list.add(rowMap);
+				jarr_data.add(json_data);
 
 			}
-			Map.put("meta", rowMap1);
-			Map.put("data", list);
+			json_all.put("meta", json_mate);
+			json_all.put("data", jarr_data);
 			// 将该sheet表的表名为key，List转为json后的字符串为Value进行存储
-			jo.put(sheet.getSheetName(), JSON.toJSONString(Map, false));
+			jo.put(sheet.getSheetName(), json_all);
 			
 		}
 		System.out.println(jo);
@@ -177,7 +186,124 @@ public class ShowExcelUtil {
 
 		 return jo; 
 	}
+	public JSONObject excel2json_sheet (String path) throws IOException{
+		System.out.println("excel2json方法执行....");
+		// 返回的map
+		File file = new File(path);
+	    JSONObject json_all = new JSONObject();
+	    JSONObject json_res = new JSONObject();
+		// Excel列的样式，主要是为了解决Excel数字科学计数的问题
+		CellStyle cellStyle;
+		// 根据Excel构成的对象
+		Workbook wb;
+		// 如果是2007及以上版本，则使用想要的Workbook以及CellStyle
+		if (file.getName().endsWith("xlsx")) {
+			System.out.println("是2007及以上版本  xlsx");
+			wb = new XSSFWorkbook(
+					file.getAbsolutePath());
+			XSSFDataFormat dataFormat = (XSSFDataFormat) wb.createDataFormat();
+			cellStyle = wb.createCellStyle();
+			// 设置Excel列的样式为文本
+			cellStyle.setDataFormat(dataFormat.getFormat("@"));
+		} else {
+			System.out.println("是2007以下版本  xls");
+			InputStream inputstream = new FileInputStream(file);
+			POIFSFileSystem fs = new POIFSFileSystem(inputstream);
+			wb = new HSSFWorkbook(fs);
+			HSSFDataFormat dataFormat = (HSSFDataFormat) wb.createDataFormat();
+			cellStyle = wb.createCellStyle();
+			// 设置Excel列的样式为文本
+			cellStyle.setDataFormat(dataFormat.getFormat("@"));
+		}
 
+		// sheet表个数
+		int sheetsCounts = wb.getNumberOfSheets();
+		// 遍历每一个sheet
+		for (int i = 0; i < sheetsCounts; i++) {
+			Sheet sheet = wb.getSheetAt(i);
+			System.out.println("第" + i + "个sheet:" + sheet.toString());
+
+			// 一个sheet表对于一个List
+			
+			// 将第一行的列值作为正个json的key
+			String[] cellNames;
+			// 取第一行列的值作为key
+			Row fisrtRow = sheet.getRow(0);
+			// 如果第一行就为空，则是空sheet表，该表跳过
+			if (null == fisrtRow) {
+				continue;
+			}
+			// 得到第一行有多少列
+			int curCellNum = fisrtRow.getLastCellNum();
+			System.out.println("第一行的列数：" + curCellNum);
+			// 根据第一行的列数来生成列头数组
+			cellNames = new String[curCellNum];
+			// 单独处理第一行，取出第一行的每个列值放在数组中，就得到了整张表的JSON的key
+			for (int m = 0; m < curCellNum; m++) {
+				Cell cell = fisrtRow.getCell(m);
+				if (null == cell) {
+					continue;
+				}
+				// 设置该列的样式是字符串
+				cell.setCellStyle(cellStyle);
+				cell.setCellType(Cell.CELL_TYPE_STRING);
+				// 取得该列的字符串值
+				cellNames[m] = cell.getStringCellValue();
+			}
+			for (String s : cellNames) {
+				System.out.print("得到第" + i + " 张sheet表的列头： " + s + ",");
+			}
+
+			// 从第二行起遍历每一行
+			int rowNum = sheet.getLastRowNum();
+			System.out.println("总共有 " + rowNum + " 行");
+			 JSONObject json_mate = new JSONObject();
+			String[] cellValues = new String[curCellNum];
+			for (int j = 1; j <= rowNum; j++) {
+
+				// 一行数据对于一个Map
+
+				// 取得某一行
+				Row row = sheet.getRow(j);
+				//int cellNum = row.getLastCellNum();
+				//System.out.println("总共有 " + cellNum + "列");
+
+				// 遍历每一列
+
+				for (int k = 0; k < curCellNum; k++) {
+					Cell cell = row.getCell(k);
+					if (null == cell) {
+						continue;
+					}
+					/*
+					 * cell.setCellStyle(cellStyle);
+					 * cell.setCellType(Cell.CELL_TYPE_STRING);
+					 */
+					// 保存该单元格的数据到该行中
+
+					if ("string".equals(cellValues[k])) {
+						cellValues[k] = "string";
+					} else {
+						cellValues[k] = getCellTypev(cell);
+					}
+					// System.out.println(cellValues[k]);
+				}
+				for (int l = 0; l < curCellNum; l++) {
+					String key = cellNames[l];
+					if(key == null){
+						key = "f"+l;
+					}
+					json_mate.put(cellNames[l], cellValues[l]);
+					// 保存该行的数据到该表的List中
+				}
+
+			}
+			json_all.put("meta", json_mate);
+			json_res.put(sheet.getSheetName(), json_all);
+		}
+
+		 return json_res; 
+	}
 	private static String getCellTypev(Cell cell/* , boolean treatAsStr */) {
 		if (cell == null) {
 			return "";

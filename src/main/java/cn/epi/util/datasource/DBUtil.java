@@ -60,16 +60,16 @@ public class DBUtil {
 		Connection conn = null;
 		JSONArray array = new JSONArray();
 		ResultSet result = null;
-		PreparedStatement preStatement = null;
+		Statement stmt = null;
 
 		try {
 			Class.forName("com.pivotal.jdbc.GreenplumDriver");
 			 conn = DriverManager.getConnection("jdbc:pivotal:greenplum://192.168.1.123:5432;DatabaseName=testdb", "gpadmin",
 					"gpadmin");
 			// 3.通过数据库的连接操作数据库，实现增删改查
-			preStatement = conn.prepareStatement(sql);
-			result = preStatement.executeQuery();
-			array = Tojson(result);
+			 stmt = conn.createStatement();
+			 stmt.executeUpdate(sql);
+//			array = Tojson(result);
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -91,10 +91,10 @@ public class DBUtil {
 					e.printStackTrace();
 				}
 			}
-			if (preStatement != null) {
+			if (stmt != null) {
 				try {
-					preStatement.close();
-					preStatement = null;
+					stmt.close();
+					stmt = null;
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}

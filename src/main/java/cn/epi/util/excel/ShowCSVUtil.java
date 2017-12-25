@@ -184,7 +184,46 @@ public class ShowCSVUtil {
 		}
 		return json_res;
 	}
-
+	public JSONObject csv2json_mate(String path) {
+		File file = new File(path);
+		JSONArray array = new JSONArray();
+		JSONObject json_all= new JSONObject();
+		ShowCSVUtil util;
+		JSONObject jsonobject1 = new JSONObject();
+		try {
+			util = new ShowCSVUtil(file.getAbsolutePath());
+			int row = util.getRowNum();
+			for (int i = 1; i < row; i++) {
+				
+				String value = util.getRow(i);
+				String[] str_1 = value.split(",");
+				String sb = new String();
+				JSONObject jsonobject = new JSONObject();
+				for (int j = 0; j < str_1.length; j++) {
+					sb = str_1[j] ;
+					jsonobject.put(util.getString(0, j), sb);
+					
+				}
+				
+				array.add(i-1, jsonobject);
+			}
+			int col = util.getColNum();
+			for (int i = 0; i < col; i++) {
+				String value = util.getCol(i);
+				String[] str_1 = value.split(",");
+				for (int j = 0; j < str_1.length; j++) {
+					jsonobject1.put(util.getString(0,i), util.isNum(value));
+					
+				}
+				
+			}
+			json_all.put("data", array);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return json_all;
+	}
 	public String isNum(String str) {
 		String[] str_1 = str.split(",");
 		String sb = new String();

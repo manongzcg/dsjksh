@@ -1,5 +1,6 @@
 package cn.epi.util.datasource;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,12 +8,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.epi.common.config.JConfig;
 import cn.epi.datasource.entity.FileSource;
 import cn.epi.util.excel.ShowCSVUtil;
 import cn.epi.util.excel.ShowExcelUtil;
@@ -20,25 +21,49 @@ import cn.epi.util.excel.ShowExcelUtil;
 public class CreateTable {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSS");
 	String res = sdf.format(new Date());
-	public boolean createETable(JSONObject jsonArr_sheet, String tableName) {
-		String field = null;
+	public boolean createETable(JSONObject json_mate, String tableName) {
+		String field = "";
 		DBUtil dbutil = new DBUtil();
-		     for (Iterator it1 =  jsonArr_sheet.keySet().iterator();it1.hasNext();)
+		     for (Iterator it1 =  json_mate.keySet().iterator();it1.hasNext();)
 			   {
 			    Object key1 = it1.next();
-			  String value = (String) jsonArr_sheet.get(key1);
+			  String value = json_mate.getString((String) key1);
 			   field = field+(String) key1; 
 	             if("num".equals(value)){
-	            	 field = field +" numeric";
+	            	 field = field +" "+"numeric";
 	             }else{
-	            	 field = field + " text";
+	            	 field = field +" "+ "text";
 	             }
 	             field = field + ", \r\n";
 			   }
-		     field = field.substring(0,field.length()-6);
-		    
+		     field = field.substring(0,field.length()-4);
 			String sql = "create table "+tableName +"("+field+")";
 		   boolean re = dbutil.connGP(sql);
+		return re;
+	
+	}
+	public boolean insertTable(JSONArray jsonArr_file, String tableName,String rootPath,String type) {
+		String field = "";
+		DBUtil dbutil = new DBUtil();
+		String sql = "";
+		boolean re =false;
+		Object show = new Object();
+		if("csv".equals(type)){
+			for (int i = 0; i < jsonArr_file.size(); i++)// 通过循环取出数组里的值
+			{
+				ShowCSVUtil showCSV = new ShowCSVUtil();
+				JSONObject jsonTemp = (JSONObject) jsonArr_file.getJSONObject(i);
+				String key = jsonTemp.getString("key");
+				show = (JSONObject)showCSV.csv2json_mate(rootPath+"/"+key);
+				 re = dbutil.connGP(sql);
+				
+			}
+			
+			
+		}
+		
+		
+		   
 		return re;
 	
 	}

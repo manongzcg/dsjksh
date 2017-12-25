@@ -4,8 +4,8 @@ import cn.epi.sys.entity.DataEntity;
 
 public class Files extends DataEntity<Files> {
 private  int file_resource_id ;
-private String name;
-private String key;
+private String old_name;
+private String new_name;
 private String url;
 private  int data_resource_id ;    
 private String csv_separator  ;      
@@ -16,18 +16,7 @@ public int getFile_resource_id() {
 public void setFile_resource_id(int file_resource_id) {
 	this.file_resource_id = file_resource_id;
 }
-public String getOld_name() {
-	return name;
-}
-public void setOld_name(String old_name) {
-	this.name = old_name;
-}
-public String getNew_name() {
-	return key;
-}
-public void setNew_name(String new_name) {
-	this.key = new_name;
-}
+
 public String getUrl() {
 	return url;
 }
@@ -51,6 +40,19 @@ public String getWithheader() {
 }
 public void setWithheader(String withheader) {
 	this.withheader = withheader;
+}
+
+public String getNew_name() {
+	return new_name;
+}
+public void setNew_name(String new_name) {
+	this.new_name = new_name;
+}
+public String getOld_name() {
+	return old_name;
+}
+public void setOld_name(String old_name) {
+	this.old_name = old_name;
 }     
 
 }

@@ -5,20 +5,20 @@
 
 
 <insert id="insert">
-		insert into sjlj_files
-		old_name,new_name,url,data_resource_id,csv_separator,withheader
+		insert into sjlj_file
+		(old_name,new_name,url,data_resource_id,csv_separator,withheader)
 		values(#{old_name},#{new_name},#{url},#{data_resource_id},#{csv_separator},#{withheader})
 	</insert>
 
 
 	<update id="update">
-		update sjlj_dataresource set
+		update sjlj_files set
 		old_name=#{old_name},new_name=#{new_name},url=#{url},data_resource_id=#{data_resource_id},csv_separator=#{csv_separator},withheader=#{withheader}
 		where data_resource_id=#{data_resource_id}
 	</update>
 
 	<delete id="delete">
-		delete from sjlj_dataresource where
+		delete from sjlj_files where
 		data_resource_id=#{data_resource_id}
 	</delete>
 
