@@ -117,8 +117,6 @@ public class FileSourceController extends BaseController {
 		}
 		joA.put("files", ja);
 		joA.put("options", show);
-		HttpSession session = request.getSession();
-		session.setAttribute("files", ja);
 		// System.out.println(newFile);
 		// // 将内存中的数据写入磁盘
 		//file.transferTo(newFile);
@@ -162,7 +160,7 @@ public class FileSourceController extends BaseController {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		System.out.println(files.getWithheader());
 		JSONArray jsonArr_file = JSONObject.parseArray(params);
-		JSONObject json_mate = JSONObject.parseObject(mate);
+		JSONObject jsonArr_sheet = JSONObject.parseObject(mate);
 		TableDBEntity tableDBe = new TableDBEntity();
 		CreateTable createtable = new CreateTable();
 		datasourceService.save(datasource);
@@ -208,7 +206,7 @@ public class FileSourceController extends BaseController {
 	     boolean result = false ;
 		if ("CSV".equals(datasource.getData_type())) {
 //			ShowCSVUtil showCSV = new ShowCSVUtil();
-//			JSONObject json_mate = showCSV.csv2json_mate(filePath);
+			JSONObject json_mate = jsonArr_sheet.getJSONObject("table") ;
 			 String  table_name ="C_"+res; 
 			 result = createtable.createETable(json_mate,table_name);
 		     tableDBe.setTable_name(table_name);
@@ -224,17 +222,17 @@ public class FileSourceController extends BaseController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			for (Iterator it =  jsonObj_sheet.keySet().iterator();it.hasNext();)
-//			   {
-//			    Object key = it.next();
-//			    JSONObject json_table = (JSONObject) jsonObj_sheet.get(key);
-//			     JSONObject json_mate = json_table.getJSONObject("mate");
+			for (Iterator it =  jsonObj_sheet.keySet().iterator();it.hasNext();)
+			   {
+			    Object key = it.next();
+			    JSONObject json_mate = jsonArr_sheet.getJSONObject((String) key);
+			    
 			     String  table_name = "E_"+res;
 			     result =  createtable.createETable(json_mate,table_name);
 			     tableDBe.setTable_name(table_name);
 			     tableDBe.setData_resource_id(id);
 			     tableDBs.save(tableDBe);
-//			     }
+			     }
 			
 		}
 		JSONObject json_res = messageReturn.MassageReturn(result);
