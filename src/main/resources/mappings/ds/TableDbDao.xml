@@ -11,5 +11,7 @@
 		values(#{data_resource_id},#{table_name},#{state},#{old_table_name},#{old_data_name},#{type},#{is_Timing_execution} )
 	</insert>
 
-
+	<delete id="deleteTable">
+		delete from sjlj_table_datasource where data_resource_id=#{data_resource_id}
+	</delete>
 </mapper>

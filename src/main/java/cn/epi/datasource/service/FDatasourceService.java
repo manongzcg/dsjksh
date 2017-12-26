@@ -37,4 +37,15 @@ public class FDatasourceService extends CrudService<FDatabaseDao, FileSource> {
             return dao.update(entity);
         
     }
+    /**
+     * 保存数据（插入或更新）
+     *
+     * @param entity
+     */
+    @Transactional(readOnly = false)
+    public int updateFile(FileSource entity) {
+    
+            return dao.updateFile(entity);
+        
+    }
 }

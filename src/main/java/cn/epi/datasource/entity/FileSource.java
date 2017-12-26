@@ -23,6 +23,20 @@ public class FileSource extends DataEntity<FileSource>{
     private String data_name  ;
     private String cache_time  ;
     private String cache_date  ;
+    private String csv_separator  ;
+    public String getCsv_separator() {
+		return csv_separator;
+	}
+	public void setCsv_separator(String csv_separator) {
+		this.csv_separator = csv_separator;
+	}
+	public String getWith_header() {
+		return with_header;
+	}
+	public void setWith_header(String with_header) {
+		this.with_header = with_header;
+	}
+	private String with_header  ;
     
 	public int getData_resource_id() {
 		return data_resource_id;

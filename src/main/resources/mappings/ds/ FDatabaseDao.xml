@@ -37,6 +37,8 @@
 		<result column="data_name" property="data_name" />
 		<result column="cache_time" property="cache_time" />
 		<result column="cache_date" property="cache_date" />
+		<result column="csv_separator" property="csv_separator" />
+		<result column="with_header" property="with_header" />
 	</resultMap>
 	<resultMap type="cn.epi.datasource.entity.FileSource" id="AllResultMap">
 		<result column="data_type" property="data_type" />
@@ -68,7 +70,7 @@
 	</select>
 	<select id="findDesc" resultMap="DescResultMap">
 		SELECT
-		data_resource_id,data_resource_name,data_type,IP,port,userid,SID,data_name,cache_time,cache_date
+		data_resource_id,data_resource_name,data_type,IP,port,userid,SID,data_name,cache_time,cache_date,csv_separator,with_header
 		FROM sjlj_dataresource a where data_resource_id=#{data_resource_id}
 	</select>
 	<select id="findAll" resultMap="AllResultMap">
@@ -87,14 +89,19 @@
 
 	<insert id="insert">
 		insert into sjlj_dataresource
-		(data_resource_id,data_resource_name,data_type,operator_name,operator_date,state,IP,port,userid,password,SID,data_name,cache_time,cache_date)
-		values(#{data_resource_id},#{data_resource_name},#{data_type},#{operator_name},#{operator_date},#{state},#{IP},#{port},#{userid},#{password},#{SID},#{data_name},#{cache_time},#{cache_date})
+		(data_resource_id,data_resource_name,data_type,operator_name,operator_date,state,IP,port,userid,password,SID,data_name,cache_time,cache_date,csv_separator,with_header)
+		values(#{data_resource_id},#{data_resource_name},#{data_type},#{operator_name},#{operator_date},#{state},#{IP},#{port},#{userid},#{password},#{SID},#{data_name},#{cache_time},#{cache_date},#{csv_separator},#{with_header})
 	</insert>
 
 
 	<update id="update">
 		update sjlj_dataresource set
 		data_resource_name=#{data_resource_name},data_type=#{data_type},operator_name=#{operator_name},operator_date=#{operator_date},state=#{state},IP=#{IP},port=#{port},userid=#{userid},password=#{password},SID=#{SID},data_name=#{data_name}
+		where data_resource_id=#{data_resource_id}
+	</update>
+	<update id="updateFile">
+		update sjlj_dataresource set
+		data_resource_name=#{data_resource_name},data_type=#{data_type},operator_name=#{operator_name},operator_date=#{operator_date},state=#{state},IP=#{IP},data_name=#{data_name},csv_separator=#{csv_separator},with_header=#{with_header}
 		where data_resource_id=#{data_resource_id}
 	</update>
 	<update id="changeName">

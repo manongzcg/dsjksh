@@ -24,5 +24,14 @@ import cn.epi.sys.entity.Organization;
 @Transactional(readOnly = true)
 public class TableDBService extends CrudService<TableDBDao, TableDBEntity> {
 
+	 /**
+     * 删除数据
+     *
+     * @param id
+     */
+    @Transactional(readOnly = false)
+    public int deleteTable(Object id) {
+        return dao.deleteTable(id);
+    }
 
 }

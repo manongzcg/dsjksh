@@ -61,10 +61,8 @@ public class CreateTable {
 					sql = "insert into "+tableName+" values ("+list.get(j)+")";
 					re = dbutil.connGP(sql);
 				}
-				 re = dbutil.connGP(sql);
-				
 			}
-			
+		}else{
 			
 		}
 		

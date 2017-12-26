@@ -13,5 +13,12 @@ import cn.epi.datasource.entity.TableDBEntity;
 
 @MyBatisDao
 public interface TableDBDao extends ICrudDao<TableDBEntity> {
-	
+	/**
+	 * 删除数据
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public int deleteTable(Object id);
+
 }

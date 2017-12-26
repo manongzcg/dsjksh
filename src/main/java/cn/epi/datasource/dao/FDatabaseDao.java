@@ -19,4 +19,11 @@ public interface FDatabaseDao extends ICrudDao<FileSource> {
 	 * @return
 	 */
 	public int changeName(FileSource filesource);
+	/**
+	 * 更新文件数据源                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public int updateFile(FileSource filesource);
 }
